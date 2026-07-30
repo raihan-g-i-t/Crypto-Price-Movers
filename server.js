@@ -12,6 +12,7 @@ const THRESHOLD_1M = Number(
   process.env.THRESHOLD_PERCENT_1M || process.env.THRESHOLD_PERCENT || 2
 );
 const THRESHOLD_5M = Number(process.env.THRESHOLD_PERCENT_5M || 5);
+const THRESHOLD_15M = Number(process.env.THRESHOLD_PERCENT_15M || 8);
 
 const BINANCE_REST = 'https://api.binance.com';
 const BINANCE_WS = 'wss://stream.binance.com:9443/ws';
@@ -19,6 +20,7 @@ const BINANCE_WS = 'wss://stream.binance.com:9443/ws';
 const INTERVALS = [
   { key: '1m', stream: 'kline_1m', threshold: THRESHOLD_1M },
   { key: '5m', stream: 'kline_5m', threshold: THRESHOLD_5M },
+  { key: '15m', stream: 'kline_15m', threshold: THRESHOLD_15M },
 ];
 
 // ---------- Telegram ----------

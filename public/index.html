@@ -236,6 +236,7 @@
   <div class="tabs" id="tabs">
     <button class="tab active" data-interval="1m">1m</button>
     <button class="tab" data-interval="5m">5m</button>
+    <button class="tab" data-interval="15m">15m</button>
   </div>
 
   <div class="toolbar">
@@ -266,8 +267,8 @@
 </div>
 
 <script>
-  let thresholds = { '1m': 5, '5m': 5 };
-  let dataByInterval = { '1m': [], '5m': [] };
+  let thresholds = { '1m': 5, '5m': 5, '15m': 8 };
+  let dataByInterval = { '1m': [], '5m': [], '15m': [] };
   let activeInterval = '1m';
   let filterText = '';
 
@@ -369,7 +370,9 @@
       const msg = JSON.parse(evt.data);
       if (msg.type === 'config') {
         thresholds = msg.thresholds;
-        footer.textContent = `1m threshold: ${thresholds['1m']}% · 5m threshold: ${thresholds['5m']}% · updates every second`;
+        footer.textContent = Object.entries(thresholds)
+          .map(([key, pct]) => `${key} threshold: ${pct}%`)
+          .join(' · ') + ' · updates every second';
         render();
       } else if (msg.type === 'snapshot') {
         dataByInterval = msg.data;
