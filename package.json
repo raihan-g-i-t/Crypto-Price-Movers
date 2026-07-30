@@ -1,0 +1,15 @@
+{
+  "name": "binance-5pct-monitor",
+  "version": "1.0.0",
+  "description": "Live monitor for Binance USDT pairs whose 1-minute candle moves 5%+, with a web dashboard and Telegram alerts.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "ws": "^8.18.0"
+  }
+}

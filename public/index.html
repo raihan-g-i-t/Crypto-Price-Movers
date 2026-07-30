@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Binance Movers</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --good:           #006300;
+    --good-bg:        rgba(12,163,12,0.08);
+    --critical:       #d03b3b;
+    --critical-bg:    rgba(208,59,59,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --good:           #0ca30c;
+      --good-bg:        rgba(12,163,12,0.12);
+      --critical:       #e66767;
+      --critical-bg:    rgba(230,103,103,0.12);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.10);
+    --good:           #0ca30c;
+    --good-bg:        rgba(12,163,12,0.12);
+    --critical:       #e66767;
+    --critical-bg:    rgba(230,103,103,0.12);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+  .sub {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .dot.live { background: var(--good); }
+  .dot.down { background: var(--critical); }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    background: var(--surface-1);
+    width: fit-content;
+  }
+  .tab {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab.active {
+    background: var(--page);
+    color: var(--text-primary);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  input[type="search"] {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface-1);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+  }
+
+  .surface {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--gridline);
+    position: sticky;
+    top: 0;
+    background: var(--surface-1);
+  }
+  th.num, td.num { text-align: right; }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gridline);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .symbol { font-weight: 600; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .badge.up { color: var(--good); background: var(--good-bg); }
+  .badge.down { color: var(--critical); background: var(--critical-bg); }
+  .pct-plain.up { color: var(--good); }
+  .pct-plain.down { color: var(--critical); }
+  .row-flag-up { box-shadow: inset 3px 0 0 var(--good); }
+  .row-flag-down { box-shadow: inset 3px 0 0 var(--critical); }
+  .empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  footer {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .scroll-fabs {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+  }
+  .scroll-fabs button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-1);
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .scroll-fabs button:hover { background: var(--page); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Binance Movers</h1>
+      <div class="sub" id="subtitle">USDT pairs, live candle open→last % change</div>
+    </div>
+    <div class="status-row">
+      <span class="dot" id="conn-dot"></span>
+      <span id="conn-text">connecting…</span>
+      <span>·</span>
+      <span id="movers-count">0 at threshold</span>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-interval="1m">1m</button>
+    <button class="tab" data-interval="5m">5m</button>
+  </div>
+
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Filter symbol, e.g. BTC" />
+  </div>
+
+  <div class="surface">
+    <table>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th class="num">Price</th>
+          <th class="num" id="pct-header">Δ%</th>
+          <th class="num">Volume (base)</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none;">No symbols match.</div>
+  </div>
+
+  <footer id="footer">Threshold: —% · updates every second</footer>
+</div>
+
+<div class="scroll-fabs">
+  <button id="scroll-top" title="Scroll to top">▲</button>
+  <button id="scroll-bottom" title="Scroll to bottom">▼</button>
+</div>
+
+<script>
+  let thresholds = { '1m': 5, '5m': 5 };
+  let dataByInterval = { '1m': [], '5m': [] };
+  let activeInterval = '1m';
+  let filterText = '';
+
+  const tbody = document.getElementById('tbody');
+  const emptyEl = document.getElementById('empty');
+  const moversCountEl = document.getElementById('movers-count');
+  const connDot = document.getElementById('conn-dot');
+  const connText = document.getElementById('conn-text');
+  const footer = document.getElementById('footer');
+  const subtitle = document.getElementById('subtitle');
+  const pctHeader = document.getElementById('pct-header');
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    filterText = e.target.value.trim().toUpperCase();
+    render();
+  });
+
+  document.getElementById('scroll-top').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  document.getElementById('scroll-bottom').addEventListener('click', () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
+
+  document.getElementById('tabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab');
+    if (!btn) return;
+    activeInterval = btn.dataset.interval;
+    document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t === btn));
+    subtitle.textContent = `USDT pairs, live ${activeInterval}-candle open→last % change`;
+    pctHeader.textContent = `${activeInterval} Δ%`;
+    render();
+  });
+
+  function fmtPrice(p) {
+    if (p >= 100) return p.toFixed(2);
+    if (p >= 1) return p.toFixed(4);
+    return p.toPrecision(4);
+  }
+
+  function fmtVolume(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(2) + 'K';
+    return v.toFixed(2);
+  }
+
+  function render() {
+    const threshold = thresholds[activeInterval] ?? 5;
+    const latest = dataByInterval[activeInterval] || [];
+    const rows = filterText
+      ? latest.filter((r) => r.symbol.includes(filterText))
+      : latest;
+
+    const moversCount = latest.filter((r) => Math.abs(r.pct) >= threshold).length;
+    moversCountEl.textContent = `${moversCount} at threshold`;
+
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      emptyEl.style.display = 'block';
+      return;
+    }
+    emptyEl.style.display = 'none';
+
+    tbody.innerHTML = rows
+      .map((r) => {
+        const isUp = r.pct > 0;
+        const crossed = Math.abs(r.pct) >= threshold;
+        const rowClass = crossed ? (isUp ? 'row-flag-up' : 'row-flag-down') : '';
+        const pctText = (r.pct >= 0 ? '+' : '') + r.pct.toFixed(2) + '%';
+        const pctHtml = crossed
+          ? `<span class="badge ${isUp ? 'up' : 'down'}">${isUp ? '▲' : '▼'} ${pctText}</span>`
+          : `<span class="pct-plain ${isUp ? 'up' : 'down'}">${pctText}</span>`;
+        return `<tr class="${rowClass}">
+          <td class="symbol">${r.symbol}</td>
+          <td class="num">${fmtPrice(r.price)}</td>
+          <td class="num">${pctHtml}</td>
+          <td class="num">${fmtVolume(r.volume)}</td>
+        </tr>`;
+      })
+      .join('');
+  }
+
+  function connect() {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${proto}//${location.host}/ws`);
+
+    ws.onopen = () => {
+      connDot.className = 'dot live';
+      connText.textContent = 'live';
+    };
+    ws.onclose = () => {
+      connDot.className = 'dot down';
+      connText.textContent = 'disconnected — retrying…';
+      setTimeout(connect, 2000);
+    };
+    ws.onerror = () => ws.close();
+    ws.onmessage = (evt) => {
+      const msg = JSON.parse(evt.data);
+      if (msg.type === 'config') {
+        thresholds = msg.thresholds;
+        footer.textContent = `1m threshold: ${thresholds['1m']}% · 5m threshold: ${thresholds['5m']}% · updates every second`;
+        render();
+      } else if (msg.type === 'snapshot') {
+        dataByInterval = msg.data;
+        render();
+      }
+    };
+  }
+  connect();
+</script>
+</body>
+</html>
