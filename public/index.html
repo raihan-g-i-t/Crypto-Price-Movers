@@ -183,6 +183,19 @@
   .pct-plain.down { color: var(--critical); }
   .row-flag-up { box-shadow: inset 3px 0 0 var(--good); }
   .row-flag-down { box-shadow: inset 3px 0 0 var(--critical); }
+  .chart-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--page);
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .chart-btn:hover { background: var(--surface-1); }
   .empty {
     padding: 32px;
     text-align: center;
@@ -251,6 +264,7 @@
           <th class="num">Price</th>
           <th class="num" id="pct-header">Δ%</th>
           <th class="num">Volume (base)</th>
+          <th class="num">Chart</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -280,6 +294,12 @@
   const footer = document.getElementById('footer');
   const subtitle = document.getElementById('subtitle');
   const pctHeader = document.getElementById('pct-header');
+
+  tbody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chart-btn');
+    if (!btn) return;
+    window.open(binanceChartUrl(btn.dataset.symbol), '_blank', 'noopener');
+  });
 
   document.getElementById('search').addEventListener('input', (e) => {
     filterText = e.target.value.trim().toUpperCase();
@@ -316,6 +336,11 @@
     return v.toFixed(2);
   }
 
+  function binanceChartUrl(symbol) {
+    const base = symbol.endsWith('USDT') ? symbol.slice(0, -4) : symbol;
+    return `https://www.binance.com/en/trade/${base}_USDT?type=spot`;
+  }
+
   function render() {
     const threshold = thresholds[activeInterval] ?? 5;
     const latest = dataByInterval[activeInterval] || [];
@@ -347,6 +372,7 @@
           <td class="num">${fmtPrice(r.price)}</td>
           <td class="num">${pctHtml}</td>
           <td class="num">${fmtVolume(r.volume)}</td>
+          <td class="num"><button class="chart-btn" data-symbol="${r.symbol}">Chart</button></td>
         </tr>`;
       })
       .join('');
